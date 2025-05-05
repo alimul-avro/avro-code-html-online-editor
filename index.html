@@ -1,69 +1,296 @@
-<style>
-    /* Previous CSS remains the same */
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML online editor By AVRO</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.3/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.3/theme/material-darker.min.css">
+    <style>
+        :root {
+            --primary-color: #2196F3;
+            --success-color: #4CAF50;
+            --error-color: #f44336;
+        }
 
-    /* Mobile Responsive Adjustments */
-    @media screen and (max-width: 768px) {
-        .code-box {
-            max-width: 100%;
+        body {
             margin: 0;
-            border-radius: 0;
+            background: #1a1a1a;
+            color: #fff;
+            font-family: 'Fira Code', monospace;
+        }
+
+        .code-box {
+            max-width: 1000px;
+            margin: 2rem auto;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
         }
 
         .editor-header {
-            flex-direction: column;
-            gap: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             padding: 12px;
-            align-items: stretch;
-        }
-
-        .filename-input {
-            width: 100%;
-            margin-right: 0;
-            box-sizing: border-box;
+            background: #2d2d2d;
+            border-bottom: 1px solid #404040;
         }
 
         .editor-buttons {
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        .code-button {
-            flex: 1 1 45%;
-            justify-content: center;
-            padding: 8px;
-            font-size: 13px;
-        }
-
-        .CodeMirror {
-            height: 400px !important;
-            font-size: 13px;
-        }
-
-        .output-container {
-            padding: 10px;
-        }
-
-        #output {
-            height: 300px;
-        }
-    }
-
-    @media screen and (max-width: 480px) {
-        .code-button {
-            flex: 1 1 100%;
-        }
-
-        .CodeMirror {
-            height: 50vh !important;
-        }
-
-        #output {
-            height: 40vh;
+            display: flex;
+            gap: 12px;
         }
 
         .filename-input {
-            font-size: 13px;
-            padding: 6px 8px;
+            background: #404040;
+            border: 1px solid #555;
+            border-radius: 4px;
+            padding: 8px 12px;
+            color: #fff;
+            font-family: 'Fira Code', monospace;
+            font-size: 14px;
+            width: 200px;
+            margin-right: 12px;
         }
-    }
-</style>
+
+        .filename-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .code-button {
+            background: #404040;
+            border: none;
+            border-radius: 4px;
+            padding: 8px 12px;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .code-button:hover {
+            background: var(--primary-color);
+            transform: translateY(-1px);
+        }
+
+        .CodeMirror {
+            height: 500px !important;
+            font-size: 14px;
+            font-family: 'Fira Code', monospace;
+        }
+
+        .output-container {
+            padding: 20px;
+            background: #fff;
+            border-top: 2px solid #404040;
+            color: #000;
+        }
+
+        #output {
+            width: 100%;
+            height: 400px;
+            border: none;
+        }
+
+        .CodeMirror-linenumbers {
+            padding-right: 10px !important;
+        }
+
+        /* Responsive Additions */
+        @media screen and (max-width: 768px) {
+            .code-box {
+                margin: 0;
+                border-radius: 0;
+            }
+
+            .editor-header {
+                flex-direction: column;
+                gap: 12px;
+                padding: 8px;
+            }
+
+            .filename-input {
+                width: 100%;
+                margin-right: 0;
+                box-sizing: border-box;
+            }
+
+            .editor-buttons {
+                flex-wrap: wrap;
+                justify-content: center;
+                width: 100%;
+                gap: 8px;
+            }
+
+            .code-button {
+                flex-grow: 1;
+                justify-content: center;
+                padding: 8px;
+                font-size: 13px;
+            }
+
+            .CodeMirror {
+                height: 400px !important;
+                font-size: 12px;
+            }
+
+            #output {
+                height: 300px;
+            }
+
+            .output-container {
+                padding: 10px;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            .code-button span {
+                display: none;
+            }
+
+            .CodeMirror {
+                height: 350px !important;
+            }
+
+            #output {
+                height: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="code-box">
+        <div class="editor-header">
+            <input type="text" id="filename-input" class="filename-input" placeholder="Enter filename..." value="code_avro.html">
+            <div class="editor-buttons">
+                <button id="run-code-button" class="code-button" title="Run (Ctrl+Enter)">
+                    ▶ Run
+                </button>
+                <button id="copy-code-button" class="code-button" title="Copy Code">
+                    ⎘ Copy
+                </button>
+                <button id="download-button" class="code-button" title="Save Locally (Ctrl+Shift+S)">
+                    ⬇ Download Code
+                </button>
+                <button id="theme-button" class="code-button" title="Toggle Theme">
+                    ☀/☾ Theme
+                </button>
+            </div>
+        </div>
+        <textarea id="code-editor"></textarea>
+        <div class="output-container">
+            <iframe id="output"></iframe>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.3/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.3/mode/xml/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.3/addon/edit/closetag.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.3/addon/hint/show-hint.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.3/addon/hint/xml-hint.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.3/addon/display/autorefresh.min.js"></script>
+
+    <script>
+        const editor = CodeMirror.fromTextArea(document.getElementById('code-editor'), {
+            lineNumbers: true,
+            theme: 'material-darker',
+            mode: 'text/html',
+            autoCloseTags: true,
+            autoRefresh: true,
+            extraKeys: {
+                "'<'": function(cm) { cm.closeTag(cm, '>'); },
+                "'/'": function(cm) { cm.closeTag(cm, '/'); },
+                "Ctrl-Space": "autocomplete",
+                "Ctrl-Enter": function(cm) { runCode(); },
+                "Ctrl-Shift-S": function(cm) { saveFileLocally(); }
+            },
+            gutters: ["CodeMirror-linenumbers"],
+            hintOptions: {
+                schemaInfo: {
+                    "!top": ["html"],
+                    "html": { 
+                        attrs: { lang: null },
+                        children: ["head", "body"]
+                    }
+                }
+            }
+        });
+
+        const filenameInput = document.getElementById('filename-input');
+        const runButton = document.getElementById('run-code-button');
+        const copyButton = document.getElementById('copy-code-button');
+        const downloadButton = document.getElementById('download-button');
+        const themeButton = document.getElementById('theme-button');
+        const output = document.getElementById('output');
+
+        // Set initial code
+        editor.setValue(`<!DOCTYPE html>
+<html>
+<head>
+    <title>HTML editor By AVRO</title>
+</head>
+<body>
+    <h1>Hello World!</h1>
+</body>
+</html>`);
+
+        function runCode() {
+            try {
+                const code = editor.getValue();
+                output.srcdoc = code;
+            } catch (error) {
+                output.contentDocument.body.innerHTML = `<span style="color:red">${error.message}</span>`;
+            }
+        }
+
+        function saveFileLocally() {
+            const code = editor.getValue();
+            const filename = filenameInput.value || 'untitled.html';
+            const blob = new Blob([code], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        runButton.addEventListener('click', runCode);
+        downloadButton.addEventListener('click', saveFileLocally);
+
+        editor.on('keydown', (cm, event) => {
+            if (event.ctrlKey && event.key === 'Enter') runCode();
+        });
+
+        copyButton.addEventListener('click', () => {
+            navigator.clipboard.writeText(editor.getValue())
+                .then(() => {
+                    copyButton.textContent = 'Copied!';
+                    setTimeout(() => {
+                        copyButton.textContent = '⎘ Copy';
+                    }, 2000);
+                })
+                .catch(err => console.error('Copy failed:', err));
+        });
+
+        themeButton.addEventListener('click', () => {
+            const currentTheme = editor.getOption('theme');
+            const newTheme = currentTheme === 'material-darker' ? 'default' : 'material-darker';
+            editor.setOption('theme', newTheme);
+            document.body.style.backgroundColor = newTheme === 'material-darker' ? '#1a1a1a' : '#ffffff';
+            output.style.backgroundColor = newTheme === 'material-darker' ? '#ffffff' : '#1a1a1a';
+        });
+
+        // Initial setup
+        editor.focus();
+        editor.setSize('100%', '500px');
+        runCode();
+    </script>
+</body>
+</html>
